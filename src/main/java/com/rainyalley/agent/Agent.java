@@ -5,6 +5,7 @@ public class Agent {
 
     public static void premain(String args, Instrumentation instrumentation){
         ClassTrackingTransformer transformer = new ClassTrackingTransformer();
+        transformer.init();
         instrumentation.addTransformer(transformer);
     }
 }

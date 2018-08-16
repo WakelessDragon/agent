@@ -1,68 +1,42 @@
 package com.rainyalley.agent;
 
+import com.rainyalley.agent.runtime.Util;
 import javassist.*;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
-import java.lang.management.ManagementFactory;
-import java.lang.management.RuntimeMXBean;
 import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
 
 /**
  * @author bin.zhang
  */
 public class ClassTrackingTransformer implements ClassFileTransformer {
 
-    private String javaAgentPrefix = "-javaagent:";
+    private static final String DELIMITER = ";";
 
-    private String delimiter = ";";
-
-    private  ClassPool pool = ClassPool.getDefault();
+    private ClassPool pool = ClassPool.getDefault();
 
     private List<String> classPathList = new ArrayList<String>();
     private List<String> trackingPackageList = new ArrayList<String>();
-    private String workDir = "";
 
-    {
+
+    public void init(){
         try {
-            RuntimeMXBean runtimeMxBean = ManagementFactory.getRuntimeMXBean();
-            List<String> arguments = runtimeMxBean.getInputArguments();
-            for (String arg : arguments) {
-                if(!arg.startsWith(javaAgentPrefix)){
-                    continue;
-                }
-
-                String agentJarPath = arg.substring(javaAgentPrefix.length());
-                pool.appendClassPath(agentJarPath);
-                String currDir = agentJarPath.substring(0, agentJarPath.lastIndexOf(File.separator));
-                String agentConfPath = currDir + File.separator + "rainyalley-agent.properties";
-                try {
-                    File confFile = new File(agentConfPath);
-                    if(!confFile.exists()){
-                        continue;
-                    }
-                    workDir = currDir;
-                    Properties properties = new Properties();
-                    properties.load(new BufferedReader(new FileReader(confFile)));
-                    Object classpath = properties.get("classpath");
-                    if(classpath != null && classpath.toString().length() > 0){
-                        classPathList.addAll(Arrays.asList(classpath.toString().split(delimiter)));
-                    }
-                    Object agentPackage = properties.get("tracking-package");
-                    if(agentPackage != null && agentPackage.toString().length() > 0){
-                        trackingPackageList.addAll(Arrays.asList(agentPackage.toString().split(delimiter)));
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+            File agentConfFile = Util.getConfFile();
+            if(agentConfFile == null){
+                return;
+            }
+            Object classpathListStr = Util.getConfValue("classpath");
+            if(classpathListStr != null && classpathListStr.toString().length() > 0){
+                classPathList.addAll(Arrays.asList(classpathListStr.toString().split(DELIMITER)));
+            }
+            Object trackingPackageListStr = Util.getConfValue("tracking-package");
+            if(trackingPackageListStr != null && trackingPackageListStr.toString().length() > 0){
+                trackingPackageList.addAll(Arrays.asList(trackingPackageListStr.toString().split(DELIMITER)));
             }
 
             for (String classpath : classPathList) {
@@ -95,6 +69,10 @@ public class ClassTrackingTransformer implements ClassFileTransformer {
                             Class<?> classBeingRedefined,
                             ProtectionDomain protectionDomain,
                             byte[] classfileBuffer) throws IllegalClassFormatException {
+
+        if(trackingPackageList.isEmpty()){
+            return classfileBuffer;
+        }
 
         className = className.replace("/", ".");
         boolean inPackageList = false;
