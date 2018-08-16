@@ -173,32 +173,6 @@ public class ClassTrackingTransformer implements ClassFileTransformer {
     }
 
     private CtClass resolveConstructor(CtClass ctclass){
-        //            CtConstructor[] constructors = ctclass.getConstructors();
-//            String fieldName = "startTime4javassist";
-//            CtField f = new CtField(CtClass.longType, fieldName, ctclass);
-//            ctclass.addField(f);
-//
-//            for (CtConstructor constructor : constructors) {
-//                StringBuffer outputStr = new StringBuffer("\n long cost = (endTime - " + fieldName + ") / 1000000;\n");
-//                if (outputlevel == 3) {
-//                    outputStr.append("org.slf4j.Logger logt = org.slf4j.LoggerFactory.getLogger(").append(className).append(".class);\n");
-//                } else if (outputlevel == 2) {
-//                    outputStr.append("org.apache.commons.logging.Log logt = org.apache.commons.logging.LogFactory.getLog(").append(className).append(".class);\n");
-//                }
-//
-//                outputStr.append("if(cost >= " + timedisplay + "){");
-//                if (outputlevel != 1) {
-//                    outputStr.append("logt.error(\" ");
-//                } else {
-//                    outputStr.append("System.out.println(\" ");
-//                }
-//
-//                outputStr.append(constructor.getLongName());
-//                outputStr.append(" cost:\" + cost + \"ms.\");\n}\n");
-//
-//                constructor.insertBefore(fieldName + " = System.nanoTime();\n");
-//                constructor.insertAfter("\nlong endTime = System.nanoTime();\n" + outputStr);
-//            }
         return ctclass;
     }
 
