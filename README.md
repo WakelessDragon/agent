@@ -11,4 +11,4 @@ agent-1.0-SNAPSHOT.jar
 
 javassist-3.21.0-GA.jar
 
-rainyalley-agent.properties
+[rainyalley-agent.properties](https://github.com/WakelessDragon/agent/blob/master/src/test/resources/rainyalley-agent.properties)
