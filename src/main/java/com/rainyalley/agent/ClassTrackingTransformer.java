@@ -41,11 +41,11 @@ public class ClassTrackingTransformer implements ClassFileTransformer {
 
             for (String classpath : classPathList) {
                 if(classpath.endsWith(".war")){
-                    System.out.println(String.format("starting to explode %s", classpath));
+                    System.out.println(String.format("ClassTrackingTransformer starting to explode %s", classpath));
                     WarExploder we = new WarExploder(classpath);
                     we.explode();
                     File dir = we.getExplodedFile();
-                    System.out.println(String.format("exploded to %s", dir.getAbsolutePath()));
+                    System.out.println(String.format("ClassTrackingTransformer exploded to %s", dir.getAbsolutePath()));
                     File clses = locateFile(dir, "WEB-INF", "classes");
                     pool.appendClassPath(clses.getAbsolutePath());
                     File lib = locateFile(dir, "WEB-INF", "lib");
@@ -58,6 +58,8 @@ public class ClassTrackingTransformer implements ClassFileTransformer {
                 }
             }
             pool.importPackage("com.rainyalley.agent.runtime");
+
+            System.out.println("ClassTrackingTransformer " + this);
         } catch (NotFoundException e) {
             e.printStackTrace();
         }
@@ -101,7 +103,7 @@ public class ClassTrackingTransformer implements ClassFileTransformer {
 
             return ctclass.toBytecode();
         } catch (Exception e) {
-            e.printStackTrace(System.err);
+            e.printStackTrace();
             return classfileBuffer;
         }
     }
@@ -131,20 +133,22 @@ public class ClassTrackingTransformer implements ClassFileTransformer {
             sb.append("long endTime = System.nanoTime();\n");
 
             if (!"void".equals(returnType)) {
-                sb.append(String.format("com.rainyalley.agent.runtime.MethodTracking.info(\"%s\", startTime, endTime, result, $args);", generatedMethod.getLongName()));
-                sb.append("return result ; \n");
+                sb.append(String.format("com.rainyalley.agent.runtime.MethodTracking.getInstance().info(\"%s\", startTime, endTime, result, $args);", generatedMethod.getLongName()));
+                sb.append("return result;\n");
             } else {
-                sb.append(String.format("com.rainyalley.agent.runtime.MethodTracking.info(\"%s\", startTime, endTime, \"void\", $args);", generatedMethod.getLongName()));
+                sb.append(String.format("com.rainyalley.agent.runtime.MethodTracking.getInstance().info(\"%s\", startTime, endTime, \"void\", $args);", generatedMethod.getLongName()));
             }
 
             sb.append("} catch (Throwable ex){\n");
             sb.append("long endTime = System.nanoTime();\n");
-            sb.append(String.format("com.rainyalley.agent.runtime.MethodTracking.error(\"%s\", startTime, endTime, ex, $args);", generatedMethod.getLongName()));
+            sb.append(String.format("com.rainyalley.agent.runtime.MethodTracking.getInstance().error(\"%s\", startTime, endTime, ex, $args);", generatedMethod.getLongName()));
             sb.append("throw ex;");
             sb.append("}");
             sb.append("}");
             generatedMethod.setBody(sb.toString());
             ctclass.addMethod(generatedMethod);
+
+            System.out.println("ClassTrackingTransformer transformed " + generatedMethod.getLongName());
         }
 
         return ctclass;
@@ -167,5 +171,21 @@ public class ClassTrackingTransformer implements ClassFileTransformer {
             throw new RuntimeException("No path named '" + p + "' found in file: " + cur.getAbsolutePath());
         }
         return cur;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        sb.append("\"@class\":\"com.rainyalley.agent.ClassTrackingTransformer\",");
+        sb.append("\"@super\":\"").append(super.toString()).append("\",");
+        sb.append("\"classPathList\":\"")
+                .append(classPathList)
+                .append("\"");
+        sb.append(",\"trackingPackageList\":\"")
+                .append(trackingPackageList)
+                .append("\"");
+        sb.append("}");
+        return sb.toString();
     }
 }
