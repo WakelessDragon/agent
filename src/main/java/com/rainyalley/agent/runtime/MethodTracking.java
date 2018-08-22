@@ -140,6 +140,7 @@ public class MethodTracking {
     }
 
     public  void info(final String methodName, final long startNanoTime, final long endNanoTime, final Object result, final Object[] args){
+        final long crtTimeMs = System.currentTimeMillis();
         final String currThreadName = Thread.currentThread().getName();
         tpe.execute(new Runnable() {
             @Override
@@ -147,6 +148,10 @@ public class MethodTracking {
                 try {
                     dataWriter.write(leftQuote);
                     dataWriter.write("INFO");
+                    dataWriter.write(rightQuote);
+                    dataWriter.write(delimiter);
+                    dataWriter.write(leftQuote);
+                    dataWriter.write(String.valueOf(crtTimeMs));
                     dataWriter.write(rightQuote);
                     dataWriter.write(delimiter);
                     dataWriter.write(leftQuote);
@@ -184,12 +189,17 @@ public class MethodTracking {
 
     public  void error(final String methodName, final long startNanoTime, final long endNanoTime, final Throwable ex, final Object[] args){
         final String currThreadName = Thread.currentThread().getName();
+        final long crtTimeMs = System.currentTimeMillis();
         tpe.execute(new Runnable() {
             @Override
             public void run() {
                 try {
                     dataWriter.write(leftQuote);
                     dataWriter.write("ERROR");
+                    dataWriter.write(rightQuote);
+                    dataWriter.write(delimiter);
+                    dataWriter.write(leftQuote);
+                    dataWriter.write(String.valueOf(crtTimeMs));
                     dataWriter.write(rightQuote);
                     dataWriter.write(delimiter);
                     dataWriter.write(leftQuote);
