@@ -1,7 +1,10 @@
-package com.rainyalley.agent;
+package com.bitranger.track.java.utils;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * @author bin.zhang
+ */
 public class CustomizableThreadCreator {
 
     private String threadNamePrefix;

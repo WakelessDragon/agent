@@ -1,6 +1,6 @@
-package com.rainyalley.agent.runtime;
+package com.bitranger.track.java.runtime;
 
-import com.rainyalley.agent.CustomizableThreadFactory;
+import com.bitranger.track.java.utils.CustomizableThreadFactory;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -65,32 +65,32 @@ public class MethodTracking {
 
     public MethodTracking() {
 
-        Object trackingModeStr =  Util.getConfValue("tracking-mode");
+        Object trackingModeStr =  Configure.getConfValue("tracking-mode");
         if(trackingModeStr!=null && !"".equals(trackingModeStr)){
             trackingMode = Integer.valueOf(String.valueOf(trackingModeStr));
         }
 
-        Object trackingDataDelimiterStr = Util.getConfValue("tracking-data-delimiter");
+        Object trackingDataDelimiterStr = Configure.getConfValue("tracking-data-delimiter");
         if(trackingDataDelimiterStr!=null && !"".equals(trackingDataDelimiterStr)){
             delimiter = String.valueOf(trackingDataDelimiterStr);
         }
 
-        Object leftQuoteStr = Util.getConfValue("tracking-data-left-quote");
+        Object leftQuoteStr = Configure.getConfValue("tracking-data-left-quote");
         if(leftQuoteStr!=null && !"".equals(leftQuoteStr)){
             leftQuote = String.valueOf(leftQuoteStr);
         }
-        
-        Object rightQuoteStr = Util.getConfValue("tracking-data-right-quote");
+
+        Object rightQuoteStr = Configure.getConfValue("tracking-data-right-quote");
         if(rightQuoteStr!=null && !"".equals(rightQuoteStr)){
             rightQuote = String.valueOf(rightQuoteStr);
         }
 
-        Object trackingQueueSizeStr = Util.getConfValue("tracking-queue-size");
+        Object trackingQueueSizeStr = Configure.getConfValue("tracking-queue-size");
         if(trackingQueueSizeStr!=null && !"".equals(trackingQueueSizeStr)){
             queueSize = Integer.valueOf(String.valueOf(trackingQueueSizeStr));
         }
 
-        Object trackingDataFlushInternalStr = Util.getConfValue("tracking-data-flush-internal");
+        Object trackingDataFlushInternalStr = Configure.getConfValue("tracking-data-flush-internal");
         if(trackingDataFlushInternalStr!=null && !"".equals(trackingDataFlushInternalStr)){
             flushInternal = Integer.valueOf(String.valueOf(trackingDataFlushInternalStr));
         }
@@ -110,11 +110,11 @@ public class MethodTracking {
                 10L,
                 TimeUnit.MILLISECONDS,
                 taskQueue,
-                new CustomizableThreadFactory("rainyalley-methodTracking-"),
+                new CustomizableThreadFactory("bitranger-methodTracking-"),
                 rejectedExecutionHandler);
 
 
-        File workDir = Util.getConfFile().getParentFile();
+        File workDir = Configure.getConfFile().getParentFile();
         File dataFile = new File(workDir.getPath() + File.separator + "data.txt");
         try {
             int bufferSize = bytesPerLine * flushInternal;
@@ -257,7 +257,7 @@ public class MethodTracking {
     public String toString() {
         final StringBuilder sb = new StringBuilder();
         sb.append("{");
-        sb.append("\"@class\":\"com.rainyalley.agent.runtime.MethodTracking\",");
+        sb.append("\"@class\":\"com.bitranger.agent.runtime.MethodTracking\",");
         sb.append("\"@super\":\"").append(super.toString()).append("\",");
         sb.append("\"delimiter\":\"")
                 .append(delimiter)

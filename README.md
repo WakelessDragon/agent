@@ -1,14 +1,12 @@
-# agent
-java性能监控工具
+# java track
+java监控工具
+可以追踪java method调用时间与参数
 
 ## 用法：
-jvm启动参数 -javaagent:D:\Doc\MyRepo\agent\target\agent-1.0-SNAPSHOT.jar
+1. jvm启动参数 -javaagent:java-track-1.0-SNAPSHOT.jar路径
 
+2. 将javassist-3.21.0-GA.jar放入classpath
 
-将下列文件放入 D:\Doc\MyRepo\agent\target
+3. 将bitranger-java-track.properties放入java-track-1.0-SNAPSHOT.jar同一目录
 
-agent-1.0-SNAPSHOT.jar
-
-javassist-3.21.0-GA.jar
-
-[rainyalley-agent.properties](https://github.com/WakelessDragon/agent/blob/master/src/test/resources/rainyalley-agent.properties)
+[bitranger-java-track.properties](https://github.com/bit-ranger/agent/blob/master/src/test/resources/bitranger-java-track.properties)

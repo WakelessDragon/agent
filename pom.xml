@@ -4,8 +4,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.rainyalley</groupId>
-    <artifactId>agent</artifactId>
+    <groupId>com.bitranger</groupId>
+    <artifactId>java-track</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <packaging>jar</packaging>
@@ -15,6 +15,7 @@
             <groupId>org.javassist</groupId>
             <artifactId>javassist</artifactId>
             <version>3.21.0-GA</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 
@@ -31,7 +32,7 @@
                             <addClasspath>true</addClasspath>
                         </manifest>
                         <manifestEntries>
-                            <Premain-Class>com.rainyalley.agent.Agent</Premain-Class>
+                            <Premain-Class>com.bitranger.track.java.Agent</Premain-Class>
                         </manifestEntries>
                     </archive>
                 </configuration>

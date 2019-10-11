@@ -1,6 +1,7 @@
-package com.rainyalley.agent;
+package com.bitranger.track.java.transformer;
 
-import com.rainyalley.agent.runtime.Util;
+import com.bitranger.track.java.runtime.Configure;
+import com.bitranger.track.java.utils.WarExploder;
 import javassist.*;
 
 import java.io.File;
@@ -26,15 +27,15 @@ public class ClassTrackingTransformer implements ClassFileTransformer {
 
     public void init(){
         try {
-            File agentConfFile = Util.getConfFile();
+            File agentConfFile = Configure.getConfFile();
             if(agentConfFile == null){
                 return;
             }
-            Object classpathListStr = Util.getConfValue("classpath");
+            Object classpathListStr = Configure.getConfValue("classpath");
             if(classpathListStr != null && classpathListStr.toString().length() > 0){
                 classPathList.addAll(Arrays.asList(classpathListStr.toString().split(DELIMITER)));
             }
-            Object trackingPackageListStr = Util.getConfValue("tracking-package");
+            Object trackingPackageListStr = Configure.getConfValue("tracking-package");
             if(trackingPackageListStr != null && trackingPackageListStr.toString().length() > 0){
                 trackingPackageList.addAll(Arrays.asList(trackingPackageListStr.toString().split(DELIMITER)));
             }
@@ -57,7 +58,7 @@ public class ClassTrackingTransformer implements ClassFileTransformer {
                     pool.appendClassPath(classpath);
                 }
             }
-            pool.importPackage("com.rainyalley.agent.runtime");
+            pool.importPackage("com.bitranger.track.java.runtime");
 
             System.out.println("ClassTrackingTransformer " + this);
         } catch (NotFoundException e) {
@@ -116,7 +117,7 @@ public class ClassTrackingTransformer implements ClassFileTransformer {
                 continue;
             }
             String methodNameOriginal = method.getName();
-            String methodNameImpl = method.getName()  + "$impl";
+            String methodNameImpl = method.getName()  + "$origin";
             method.setName(methodNameImpl);
             CtMethod generatedMethod = CtNewMethod.copy(method, methodNameOriginal, ctclass, (ClassMap)null);
             String returnType = method.getReturnType().getName();
@@ -133,15 +134,15 @@ public class ClassTrackingTransformer implements ClassFileTransformer {
             sb.append("long endTime = System.nanoTime();\n");
 
             if (!"void".equals(returnType)) {
-                sb.append(String.format("com.rainyalley.agent.runtime.MethodTracking.getInstance().info(\"%s\", startTime, endTime, result, $args);", generatedMethod.getLongName()));
+                sb.append(String.format("com.bitranger.track.java.runtime.MethodTracking.getInstance().info(\"%s\", startTime, endTime, result, $args);", generatedMethod.getLongName()));
                 sb.append("return result;\n");
             } else {
-                sb.append(String.format("com.rainyalley.agent.runtime.MethodTracking.getInstance().info(\"%s\", startTime, endTime, \"void\", $args);", generatedMethod.getLongName()));
+                sb.append(String.format("com.bitranger.track.java.runtime.MethodTracking.getInstance().info(\"%s\", startTime, endTime, \"void\", $args);", generatedMethod.getLongName()));
             }
 
             sb.append("} catch (Throwable ex){\n");
             sb.append("long endTime = System.nanoTime();\n");
-            sb.append(String.format("com.rainyalley.agent.runtime.MethodTracking.getInstance().error(\"%s\", startTime, endTime, ex, $args);", generatedMethod.getLongName()));
+            sb.append(String.format("com.bitranger.track.java.runtime.MethodTracking.getInstance().error(\"%s\", startTime, endTime, ex, $args);", generatedMethod.getLongName()));
             sb.append("throw ex;");
             sb.append("}");
             sb.append("}");
@@ -177,7 +178,7 @@ public class ClassTrackingTransformer implements ClassFileTransformer {
     public String toString() {
         final StringBuilder sb = new StringBuilder();
         sb.append("{");
-        sb.append("\"@class\":\"com.rainyalley.agent.ClassTrackingTransformer\",");
+        sb.append("\"@class\":\"com.bitranger.track.java.ClassTrackingTransformer\",");
         sb.append("\"@super\":\"").append(super.toString()).append("\",");
         sb.append("\"classPathList\":\"")
                 .append(classPathList)
